@@ -6,6 +6,13 @@ app_urls = [
             'post': 'create_single_user'
         }
     )),
+    path(
+        'user/login', UserView.as_view(
+            {
+                'post': 'login_single_user'
+            }
+        )
+    ),
     path('user/payment/generate', PaymentOperationView.as_view(
         {
             'post': 'create_payment_link'
@@ -17,4 +24,5 @@ app_urls = [
             'post': 'receive_callback'
         }
     )),
+    
 ]
