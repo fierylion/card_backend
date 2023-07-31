@@ -1,13 +1,13 @@
 from django.urls import path
 from .views import UserView, PaymentOperationView
 app_urls = [
-    path('user/register', UserView.as_view(
+    path('register', UserView.as_view(
         {
             'post': 'create_single_user'
         }
     )),
     path(
-        'user/login', UserView.as_view(
+        'login', UserView.as_view(
             {
                 'post': 'login_single_user'
             }
