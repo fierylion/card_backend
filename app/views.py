@@ -100,6 +100,8 @@ class PaymentOperationView(ViewSet):
         request.data.pop("password")
         request.data.pop("submerchantAcc")
         request.data.pop("user")
+        print(request.data)
+        print(request.data['utilityref'])
         user_required = CustomUser.objects.filter(reference=request.data['utilityref']).first()
        
         request.data['user']=user_required.id
