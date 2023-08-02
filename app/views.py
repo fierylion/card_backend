@@ -101,10 +101,7 @@ class PaymentOperationView(ViewSet):
         request.data.pop("submerchantAcc")
         request.data.pop("user")
         user_required = CustomUser.objects.filter(reference=request.data['utilityref']).first()
-        users = CustomUser.objects.all().values()
-        print(users)
-        print()
-        print(user_required)
+       
         request.data['user']=user_required.id
         serializer=TransactionSerializer(data=request.data)
         if serializer.is_valid():
@@ -114,6 +111,7 @@ class PaymentOperationView(ViewSet):
                 usd =CustomUser.objects.get(reference=request.data['utilityref'])
                 usd.paid=True
                 usd.save()
+                print("paid", user_required.email)
             return Response({"status":"success"}, status=status.HTTP_201_CREATED)
         print("error", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
