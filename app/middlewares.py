@@ -13,10 +13,12 @@ def user_authentication_middleware(get_response):
                 decoded_token = jwt.decode(token, os.getenv("JWT_SECRET"), algorithms=["HS256"])
                 user_id = decoded_token["user_id"]
                 user = CustomUser.objects.filter(id=user_id).first()
+                              
                 if(user):
                     if(user.paid==False):
                         return JsonResponse({'email':user.email, 'paid':False}, status=status.HTTP_200_OK)
-                    request.user = user
+             
+                    request.user_details=user                   
                     return get_response(request)
                 return JsonResponse({'error': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
             except Exception as e:

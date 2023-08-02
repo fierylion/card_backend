@@ -9,7 +9,7 @@ import os
 from azampay import Azampay
 import jwt
 from django.forms import model_to_dict
-from .card_creation import create_card
+from .card_creation import send_email_with_attachment
 import uuid
 # Create your views here.
 class UserView(ViewSet):
@@ -42,12 +42,33 @@ class UserView(ViewSet):
             return Response({"err":"Email doesn\'t exist!", "status":"failed"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"err":"Please provide email!"}, status=status.HTTP_400_BAD_REQUEST)
     def save_details(self, request):
-        serializer=UserDataSerializer(data=request.data)
+        request.data["user"]=request.user_details.id
+        if(UserData.objects.filter(user=request.user_details.id).first()):
+            return Response({"err":"User details already saved!", "status":"failed"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = UserDataSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"status":"success"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+    def send_email(self, request):
+        email = request.data.get("email") or request.user_details.email
+        if(email):
+            user_data = UserData.objects.filter(user=request.user_details.id).first()
+            if(user_data):
+                send_email_with_attachment(data={"membership_no":user_data.membership_no, "first_name":user_data.first_name, "surname":user_data.surname, "email":user_data.email, "phone_number":user_data.phone_number}, email=email)
+                return Response({"status":"success", "msg":"sent successfull"})
+            return Response({"err":"User details not found!", "status":"failed"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"err":"Please provide email!"}, status=status.HTTP_400_BAD_REQUEST)
+    def get_info(self, request):
+        user_data = UserData.objects.filter(user=request.user_details.id).first()
+        if(user_data):
+            return Response({"status":"success", "data":model_to_dict(user_data)})
+        return Response({"err":"User details not found!", "msg":"not filled form!","paid":True,"status":"failed"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                
+                
+
+        
 
 
 
@@ -69,6 +90,7 @@ class PaymentOperationView(ViewSet):
         return Response({"err":"Please provide provider"}, status=status.HTTP_400_BAD_REQUEST)
     def receive_callback(self, request):
         #message, user, password, clientId, submerchantAcc, additionalProperties
+        print(request.data)
         request.data.pop("message")
         request.data.pop("additionalProperties")
         request.data.pop("clientId")
@@ -78,13 +100,12 @@ class PaymentOperationView(ViewSet):
         request.data['user']=request.user
         serializer=TransactionSerializer(data=request.data)
         if serializer.is_valid():
+            print("valid")
             details = serializer.save()
             if(details["transactionstatus"]=="success" and details["amount"]==10000):
                 CustomUser.objects.filter(reference=details['reference']).update(paid=True)
-                info = UserData.objects.filter(user=request.user).first()
-                card_path = create_card(data={"first_name":info.first_name,"membership_no":info.membership_no,"phone_number":info.phone_number})
-                print(card_path) #email the card to the user
             return Response({"status":"success"}, status=status.HTTP_201_CREATED)
+        print("error", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
             

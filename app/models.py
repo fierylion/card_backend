@@ -56,7 +56,10 @@ class UserData(models.Model):
     user=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     first_name=models.CharField(max_length=128)
     surname=models.CharField(max_length=128)
-    email=models.EmailField(blank=False,null=False)
+    email=models.EmailField(blank=False,null=False, unique=True, error_messages={
+        'unique':"Email already exists, Please enter another one!",
+        "blank":"Email field can\'t be blank"
+        })
     phone_number=models.CharField(max_length=20)
     college_name=models.CharField(max_length=128)
     course_name=models.CharField(max_length=128)

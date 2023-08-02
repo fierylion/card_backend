@@ -13,6 +13,21 @@ app_urls = [
             }
         )
     ),
+    path('user/details', UserView.as_view(
+        {
+            'post': 'save_details'
+        }
+    )),
+    path('user/info', UserView.as_view(
+        {
+            'get': 'get_info'
+        }
+    )),
+    path('user/send_email', UserView.as_view(
+        {
+            'post': 'send_email'
+        }
+    )),
     path('user/payment/generate', PaymentOperationView.as_view(
         {
             'post': 'create_payment_link'
