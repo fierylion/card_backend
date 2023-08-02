@@ -108,13 +108,14 @@ class PaymentOperationView(ViewSet):
         serializer=TransactionSerializer(data=request.data)
         if serializer.is_valid():
             print("valid")
-            details = serializer.save()
+            serializer.save()
             if(request.data["transactionstatus"]=="success" and request.data["amount"]==10000):
                 usd =CustomUser.objects.get(reference=request.data['utilityref'])
                 usd.paid=True
                 usd.save()
                 print("paid", user_required.email)
-            return Response({"status":"success"}, status=status.HTTP_201_CREATED)
+                return Response({"status":"success"}, status=status.HTTP_200_OK)
+            return Response({'status':'failed'}, status=status.HTTP_400_BAD_REQUEST)
         print("error", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
