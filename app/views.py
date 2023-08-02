@@ -78,7 +78,7 @@ class PaymentOperationView(ViewSet):
         if(provider):
             azampay = Azampay( app_name=os.environ.get('APP_NAME'), client_id=os.environ.get('CLIENT_ID'), client_secret=os.environ.get('CLIENT_SECRET_KEY'), sandbox=True)
             track = str(uuid.uuid4())
-            user= CustomUser.objects.get(id=request.user_details.id);
+            user= CustomUser.objects.get(id=request.user_details.id)
             user.reference=track
             user.save()
 
@@ -109,8 +109,10 @@ class PaymentOperationView(ViewSet):
         if serializer.is_valid():
             print("valid")
             details = serializer.save()
-            if(details["transactionstatus"]=="success" and details["amount"]==10000):
-                CustomUser.objects.filter(reference=details['utilityref']).update(paid=True)
+            if(request.data["transactionstatus"]=="success" and request.data["amount"]==10000):
+                usd =CustomUser.objects.get(reference=request.data['utilityref'])
+                usd.paid=True
+                usd.save()
             return Response({"status":"success"}, status=status.HTTP_201_CREATED)
         print("error", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
