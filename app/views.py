@@ -99,7 +99,7 @@ class PaymentOperationView(ViewSet):
         request.data.pop("password")
         request.data.pop("submerchantAcc")
         request.data.pop("user")
-        user_required = CustomUser.objects.filter(reference=request.data['reference']).first()
+        user_required = CustomUser.objects.filter(reference=request.data['utilityref']).first()
         users = CustomUser.objects.all().values()
         print(users)
         print()
@@ -110,7 +110,7 @@ class PaymentOperationView(ViewSet):
             print("valid")
             details = serializer.save()
             if(details["transactionstatus"]=="success" and details["amount"]==10000):
-                CustomUser.objects.filter(reference=details['reference']).update(paid=True)
+                CustomUser.objects.filter(reference=details['utilityref']).update(paid=True)
             return Response({"status":"success"}, status=status.HTTP_201_CREATED)
         print("error", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
