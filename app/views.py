@@ -102,7 +102,7 @@ class PaymentOperationView(ViewSet):
         request.data.pop("user")
         user_required = CustomUser.objects.filter(reference=request.data['utilityref']).first()
        
-        # request.data['user']=user_required.id
+        request.data['user']=user_required.id
         serializer=TransactionSerializer(data=request.data)
         if serializer.is_valid():
             print("valid")
