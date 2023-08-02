@@ -44,6 +44,7 @@ class UserView(ViewSet):
         return Response({"err":"Please provide email!"}, status=status.HTTP_400_BAD_REQUEST)
     def save_details(self, request):
         request.data["user"]=request.user_details.id
+        request.data["membership_no"] = str(uuid.uuid4())
         if(UserData.objects.filter(user=request.user_details.id).first()):
             return Response({"err":"User details already saved!", "status":"failed"}, status=status.HTTP_400_BAD_REQUEST)
         serializer = UserDataSerializer(data=request.data)
