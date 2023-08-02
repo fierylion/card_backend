@@ -87,7 +87,8 @@ class PaymentOperationView(ViewSet):
             data = azampay.generate_payment_link(
                 amount=10000,
                 external_id=track,
-                provider=provider
+                provider=provider,
+                redirect_success_url = 'https://dufa.netlify.app/homepage'
             )
             print(data)
             return Response(data, status=status.HTTP_200_OK)
