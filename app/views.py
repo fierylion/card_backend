@@ -14,6 +14,7 @@ import uuid
 # Create your views here.
 class UserView(ViewSet):
     def create_single_user(self, request):
+        request.data["paid"]=False
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
