@@ -97,7 +97,8 @@ class PaymentOperationView(ViewSet):
         request.data.pop("password")
         request.data.pop("submerchantAcc")
         request.data.pop("user")
-        request.data['user']=request.user_details.id
+        user_required = CustomUser.objects.filter(reference=request.data['reference']).first()
+        request.data['user']=user_required.id
         serializer=TransactionSerializer(data=request.data)
         if serializer.is_valid():
             print("valid")
