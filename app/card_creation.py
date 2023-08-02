@@ -38,7 +38,7 @@ def create_card(data):
     card.paste(barcode_image, (350, 750))
 
     # Add other information to the card
-    font = ImageFont.truetype(Path(__file__).parent.parent /"static"/ 'Arial.ttf', 40)
+    font = ImageFont.truetype(str(Path(__file__).parent.parent /"static"/ 'Arial.ttf'), 40)
     draw.text((10, 300), f"Memb No: {data['membership_no']}", fill='white', font=font)
     draw.text((10, 360), f"Name: {(data['first_name'] + '  ' + data['surname'])}", fill='white', font=font)
     draw.text((10, 420), f"Phone: {data['phone_number']}", fill='white', font=font)
