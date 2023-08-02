@@ -78,7 +78,9 @@ class PaymentOperationView(ViewSet):
         if(provider):
             azampay = Azampay( app_name=os.environ.get('APP_NAME'), client_id=os.environ.get('CLIENT_ID'), client_secret=os.environ.get('CLIENT_SECRET_KEY'), sandbox=True)
             track = str(uuid.uuid4())
-            CustomUser.objects.filter(id=request.user.id).update(reference=track)
+            user= CustomUser.objects.get(id=request.user_details.id);
+            user.reference=track
+            user.save()
 
             data = azampay.generate_payment_link(
                 amount=10000,
